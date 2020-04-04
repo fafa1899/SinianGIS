@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,11 +17,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ViewWidget.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    osgshowwidget.cpp
 
 HEADERS += \
-    mainwindow.h
+    Common \
+    ViewWidget \
+    mainwindow.h \
+    osgshowwidget.h
 
 FORMS += \
     mainwindow.ui
@@ -29,3 +35,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
+    D:/Work/OSGNewBuild/osgearth-2.10.1/src
+
+LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
+    -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil
