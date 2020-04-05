@@ -20,7 +20,7 @@
 #define OSGEARTHQT_VIEW_WIDGET_H 1
 
 //#include <osgEarthQt/Common>
-#include "Common"
+//#include "Common"
 
 #include <osgEarth/Map>
 
@@ -28,6 +28,8 @@
 #include <osgViewer/ViewerBase>
 
 #include <QtCore/QTimer>
+
+# define OSGEARTHQT_EXPORT
 
 namespace osgEarth { namespace QtGui 
 {
