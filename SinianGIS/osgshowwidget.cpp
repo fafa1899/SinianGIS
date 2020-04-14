@@ -4,16 +4,7 @@
 #include <QLayout>
 
 #include <osgViewer/Viewer>
-
 #include <osgViewer/ViewerEventHandlers>
-#include <osgGA/TrackballManipulator>
-
-#include <osgEarthUtil/EarthManipulator>
-//#include <osgEarthUtil/ViewFitter>
-//#include <osgEarthUtil/AutoClipPlaneHandler>
-#include <osgEarthUtil/ExampleResources>
-//#include <osgEarthUtil/RTTPicker>
-//#include <osgEarthUtil/Shadowing>
 
 using namespace std;
 
@@ -21,33 +12,31 @@ OSGShowWidget::OSGShowWidget(QWidget *parent) : QWidget(parent)
 {
     _viewer.setThreadingModel(_viewer.SingleThreaded);
 
-    std::string path = "D:/Work/OSGNewBuild/osgearth-2.10.1/tests/simple.earth";
-    //std::string path = "D:/Data/hhsx/Data/MultiFoderReader.osgb";
-
-    // load something
-    _scene = osgDB::readNodeFile(path);
-    if (!_scene.valid())
-    {
-        printf("dddd\n");
-    }
-
     // we have to add a starting view, otherwise the CV will automatically
     // mark itself as done :/
     addView();
 
     // timer fires a paint event.
-//    connect(&_timer, SIGNAL(timeout()), this, SLOT(update()));
-//    _timer.start(10);
+    //    connect(&_timer, SIGNAL(timeout()), this, SLOT(update()));
+    //    _timer.start(10);
+
+    sceneProject3D = nullptr;
 }
 
-bool OSGShowWidget::loadData(std::string path)
+bool OSGShowWidget::load3DProject(std::shared_ptr<SceneProject3D> project)
 {
+    this->sceneProject3D = project;
+
+    view->setSceneData(sceneProject3D->GetRootNode());
+    mainManipulator->setViewpoint(*(sceneProject3D->GetHomeViewPoint()));
+    mainManipulator->setHomeViewpoint(*(sceneProject3D->GetHomeViewPoint()));
+
     return true;
 }
 
 //void OSGShowWidget::paintEvent(QPaintEvent* e)
 //{
-    // refresh all the views.
+// refresh all the views.
 //    if (_viewer.getRunFrameScheme() == osgViewer::ViewerBase::CONTINUOUS || _viewer.checkNeedToDoFrame() )
 //    {
 //        _viewer.frame();
@@ -79,7 +68,7 @@ void OSGShowWidget::timerEvent(QTimerEvent* )
 void OSGShowWidget::addView()
 {
     // the new View we want to add:
-    osgViewer::View* view = new osgViewer::View();
+    view = new osgViewer::View();
 
     // a widget to hold our view:
     QWidget* viewWidget = new osgEarth::QtGui::ViewWidget(view);
@@ -89,15 +78,14 @@ void OSGShowWidget::addView()
     layout()->addWidget(viewWidget);
 
     // set up the view
-    view->setCameraManipulator( new osgEarth::Util::EarthManipulator );
-    //view->setCameraManipulator( new osgGA::TrackballManipulator );
-    view->setSceneData( _scene );
+    mainManipulator = new osgEarth::Util::EarthManipulator;
+    view->setCameraManipulator(mainManipulator);
+    //view->setSceneData( root );
     view->getDatabasePager()->setUnrefImageDataAfterApplyPolicy(true,false);
 
     //osgEarth::Util::MapNodeHelper().configureView(view);         // add some stock OSG handlers:
     view->addEventHandler(new osgViewer::StatsHandler());
     view->addEventHandler(new osgViewer::HelpHandler);
-
 
     // add it to the composite viewer.
     _viewer.addView( view );

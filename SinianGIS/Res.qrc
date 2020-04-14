@@ -4,5 +4,12 @@
         <file>Res/demo.png</file>
         <file>Res/main.png</file>
         <file>Res/main.ico</file>
+        <file>Res/new.png</file>
+        <file>Res/settings.png</file>
+        <file>Res/image.png</file>
+        <file>Res/terrain.png</file>
+        <file>Res/vector.png</file>
+        <file>Res/ArcGIS.png</file>
+        <file>Res/bing.png</file>
     </qresource>
 </RCC>

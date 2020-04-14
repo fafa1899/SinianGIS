@@ -1,0 +1,4 @@
+1.OSG OSGEarth QT
+2.QT Ribbon
+3.析构函数 虚函数
+4.C++ 子类会调用父类的构造函数吗？

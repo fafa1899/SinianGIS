@@ -1,6 +1,6 @@
 #include "ExceptionDmp.h"
 
-#include <tchar.h>
+#include <C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\tchar.h>
 #include <Windows.h>
 #include <DbgHelp.h>
 

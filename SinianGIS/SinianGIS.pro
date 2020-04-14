@@ -31,13 +31,18 @@ SOURCES += \
     ViewWidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    osgshowwidget.cpp
+    osgshowwidget.cpp \
+    sceneproject3d.cpp \
+    sceneprojectbase.cpp
 
 HEADERS += \
     ExceptionDmp.h \
     ViewWidget \
     mainwindow.h \
-    osgshowwidget.h
+    osgshowwidget.h \
+    pathref.hpp \
+    sceneproject3d.h \
+    sceneprojectbase.h
 
 FORMS += \
     mainwindow.ui
@@ -52,6 +57,8 @@ INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
 
 LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
     -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil
+
+DESTDIR = $$PWD/../bin
 
 DISTFILES +=
 
