@@ -6,12 +6,13 @@
 1. 图标素材FlatWoken: https://github.com/alecive/FlatWoken
 2. 界面库Qt: https://www.qt.io/
 3. OpenSceneGraph: https://github.com/openscenegraph/OpenSceneGraph
-4. osgearth: https://github.com/gwaldron/osgearth
+4. osgEarth: https://github.com/gwaldron/osgearth
 5. osgQt: https://github.com/openscenegraph/osgQt
 
 # 目前特性
-1. 显示了一个数字地球
-   ![imglink1]
+1. 显示了一个数字地球      
+![imglink1]
+
 2. ArcGIS、bing在线数据
 3. 本地的地形、影像数据
 4. 保存为json工程文件
