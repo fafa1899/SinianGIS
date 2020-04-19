@@ -6,14 +6,16 @@ RC_ICONS = Res/main.ico
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+#CONFIG += c++17
 CONFIG += c++11
 CONFIG += console
 
 #使得QT可以调试
 QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
-#QMAKE_CXXFLAGS_RELEASE = -Od -ZI -MD
-#QMAKE_LFLAGS_RELEASE = /DEBUG /INCREMENTAL:NO
+
+#cpp11支持
+#QMAKE_CXXFLAGS += -std=c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -29,23 +31,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     ExceptionDmp.cpp \
     ViewWidget.cpp \
+    loadphotogrammetrydialog.cpp \
     main.cpp \
     mainwindow.cpp \
     osgshowwidget.cpp \
+    project3dform.cpp \
     sceneproject3d.cpp \
     sceneprojectbase.cpp
 
 HEADERS += \
     ExceptionDmp.h \
     ViewWidget \
+    loadphotogrammetrydialog.h \
     mainwindow.h \
     osgshowwidget.h \
     pathref.hpp \
+    project3dform.h \
     sceneproject3d.h \
     sceneprojectbase.h
 
 FORMS += \
-    mainwindow.ui
+    loadphotogrammetrydialog.ui \
+    mainwindow.ui \
+    project3dform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -53,7 +61,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
-    D:/Work/OSGNewBuild/osgearth-2.10.1/src
+    D:/Work/OSGNewBuild/osgearth-2.10.1/src \
+    D:/Work/Library/nlohmann/single_include
 
 LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
     -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil

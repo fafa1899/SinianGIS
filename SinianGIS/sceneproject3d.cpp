@@ -1,5 +1,6 @@
 #include "sceneproject3d.h"
 
+#include <qDebug>
 #include <string>
 
 #include <osgEarth/ImageLayer>
@@ -14,7 +15,6 @@
 //#include <osgEarthDrivers/tilecache/TileCacheOptions>
 
 #include <osgEarthUtil/EarthManipulator>
-//#include <osgEarthUtil/ViewFitter>
 //#include <osgEarthUtil/AutoClipPlaneHandler>
 #include <osgEarthUtil/ExampleResources>
 //#include <osgEarthUtil/RTTPicker>
@@ -36,11 +36,36 @@ void SceneProject3D::create()
 void SceneProject3D::read(std::string path)
 {
     this->projectFilePath = path;
+
+    SceneProjectBase::read(path);
+
+    if (projectJSON.contains("LocalImage"))
+    {
+        QJsonValue key_value = projectJSON.take("LocalImage");
+        if (key_value.isArray())
+        {
+            QJsonArray array = key_value.toArray();
+            for (int i = 0; i < array.size(); i++)
+            {
+                QJsonValue value = array.at(i);
+                if (value.isString())
+                {
+                    QByteArray v = value.toString().toLocal8Bit();
+                    AddLocalImage(v.data());
+                }
+            }
+        }
+    }
 }
 
 void SceneProject3D::write(std::string path)
 {
     this->projectFilePath = path;
+
+    projectJSON.insert("LocalImage", localImageArray);
+    projectJSON.insert("LocalTerrain", localTerrainArray);
+
+    SceneProjectBase::write(path);
 }
 
 void SceneProject3D::InitEarthMapNode()
@@ -92,6 +117,33 @@ void SceneProject3D::InitViewPoint()
     homeViewPoint.range() = 20000000;
 }
 
+void SceneProject3D::AddLocalImage(string filePath)
+{
+    osgEarth::Drivers::GDALOptions gdal;
+    gdal.url() = filePath;
+    osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer(filePath, gdal);
+    map->addLayer(layer);
+
+    QJsonValue value(QString::fromLocal8Bit(filePath.c_str()));
+    localImageArray.push_back(value);
+}
+
+void SceneProject3D::AddLocalTerrain(std::string filePath)
+{
+    osgEarth::Drivers::GDALOptions gdal;
+    gdal.url() = filePath;
+    osg::ref_ptr<osgEarth::ElevationLayer> layer = new osgEarth::ElevationLayer(filePath, gdal);
+    map->addLayer(layer);
+
+    QJsonValue value(QString::fromLocal8Bit(filePath.c_str()));
+    localTerrainArray.push_back(value);
+}
+
+void SceneProject3D::AddPhotogrammetry()
+{
+
+}
+
 void SceneProject3D::AddArcGISDrivers(std::string name, std::string url)
 {
     osgEarth::Drivers::ArcGISOptions imagery;
@@ -134,3 +186,9 @@ void SceneProject3D::AddBingTerrain()
     layer->options().cachePolicy() = osgEarth::CachePolicy::USAGE_READ_WRITE;
     map->addLayer(layer);
 }
+
+void SceneProject3D::insertViewPoint(std::string name, std::shared_ptr<osgEarth::Viewpoint> vp)
+{
+    viewPointMap[name] = vp;
+}
+

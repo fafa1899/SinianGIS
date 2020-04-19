@@ -2,13 +2,17 @@
 #include "ViewWidget"
 
 #include <QLayout>
+#include <QMessageBox>
 
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
+#include <osgEarthUtil/ViewFitter>
+
 using namespace std;
 
-OSGShowWidget::OSGShowWidget(QWidget *parent) : QWidget(parent)
+OSGShowWidget::OSGShowWidget(QWidget *parent) : QWidget(parent), viewWidget(nullptr),
+    bWork(false)
 {
     _viewer.setThreadingModel(_viewer.SingleThreaded);
 
@@ -21,6 +25,15 @@ OSGShowWidget::OSGShowWidget(QWidget *parent) : QWidget(parent)
     //    _timer.start(10);
 
     sceneProject3D = nullptr;
+}
+
+OSGShowWidget::~OSGShowWidget()
+{
+    if(viewWidget)
+    {
+        delete viewWidget;
+        viewWidget = nullptr;
+    }
 }
 
 bool OSGShowWidget::load3DProject(std::shared_ptr<SceneProject3D> project)
@@ -47,12 +60,14 @@ bool OSGShowWidget::load3DProject(std::shared_ptr<SceneProject3D> project)
 void OSGShowWidget::onStartTimer()
 {
     _timerID = startTimer(10);
+    bWork = true;
 }
 
 //关闭定时器绘制
 void OSGShowWidget::onStopTimer()
 {
     killTimer(_timerID);
+    bWork = false;
 }
 
 //定时器事件
@@ -71,7 +86,7 @@ void OSGShowWidget::addView()
     view = new osgViewer::View();
 
     // a widget to hold our view:
-    QWidget* viewWidget = new osgEarth::QtGui::ViewWidget(view);
+    viewWidget = new osgEarth::QtGui::ViewWidget(view);
 
     setLayout(new QHBoxLayout());
     layout()->setMargin(1);
@@ -89,4 +104,60 @@ void OSGShowWidget::addView()
 
     // add it to the composite viewer.
     _viewer.addView( view );
+}
+
+void OSGShowWidget::CalTerrainLayerViewPoint(std::string name)
+{
+    auto layer = sceneProject3D->GetMap()->getLayerByName<osgEarth::TerrainLayer>(name);
+    if (!layer)
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("找不到合适的视点"), QMessageBox::Ok);
+    }
+
+    //获取视点位置
+    std::shared_ptr<osgEarth::Viewpoint> vp =  std::make_shared<osgEarth::Viewpoint>();
+    if (!CalViewPointGeoExtend(layer->getDataExtentsUnion(), vp))
+    {
+      QMessageBox::critical(this, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("找不到合适的视点"), QMessageBox::Ok);
+      auto cp = layer->getDataExtentsUnion().getCentroid();
+      osgEarth::GeoPoint point(layer->getProfile()->getSRS(), cp.x(), cp.y(), cp.z());
+      osgEarth::GeoPoint newPoint = point.transform(sceneProject3D->GetMap()->getSRS());
+      vp->focalPoint() = newPoint;
+      vp->heading() = 0;
+      vp->pitch() = -90;
+      vp->range() = 16000;
+    }
+
+    sceneProject3D->insertViewPoint(name, vp);
+    mainManipulator->setViewpoint(*vp);
+}
+
+//
+bool OSGShowWidget::CalViewPointGeoExtend(const osgEarth::GeoExtent& extent, std::shared_ptr<osgEarth::Viewpoint> out)
+{
+    //
+    double xMin = extent.xMin();
+    double xMax = extent.xMax();
+    double yMin = extent.yMin();
+    double yMax = extent.yMax();
+    double z = extent.getCentroid().z();
+
+    //获取范围的四个点
+    std::vector<osgEarth::GeoPoint> points =
+    {
+        osgEarth::GeoPoint(extent.getSRS(), xMin, yMin, z),
+        osgEarth::GeoPoint(extent.getSRS(), xMax, yMin, z),
+        osgEarth::GeoPoint(extent.getSRS(), xMax, yMax, z),
+        osgEarth::GeoPoint(extent.getSRS(), xMin, yMax, z)
+    };
+
+    //计算视点
+    osgEarth::Util::ViewFitter vf(sceneProject3D->GetMap()->getSRS(), view->getCamera());
+    if(!vf.createViewpoint(points, *out))
+    {
+        return false;
+    }
+    out->heading() = 0;             //创建的视点是没有设置heading的，当设置到漫游器的时候，就会用当前的heading
+
+    return true;
 }

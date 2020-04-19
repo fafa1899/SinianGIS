@@ -46,7 +46,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -115,7 +115,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="tBOpenProject">
                <property name="text">
                 <string>打开</string>
                </property>
@@ -138,13 +138,13 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton_2">
+              <widget class="QToolButton" name="tBSaveProject">
                <property name="text">
-                <string>关闭</string>
+                <string>保存</string>
                </property>
                <property name="icon">
                 <iconset resource="Res.qrc">
-                 <normaloff>:/Res/demo.png</normaloff>:/Res/demo.png</iconset>
+                 <normaloff>:/Res/save.png</normaloff>:/Res/save.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -226,7 +226,7 @@
               <number>2</number>
              </property>
              <item>
-              <widget class="QToolButton" name="toolButton_4">
+              <widget class="QToolButton" name="tBNewTerrainLayer">
                <property name="text">
                 <string>地形</string>
                </property>
@@ -279,6 +279,52 @@
                <property name="icon">
                 <iconset resource="Res.qrc">
                  <normaloff>:/Res/vector.png</normaloff>:/Res/vector.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>32</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="tBNewPhotogrammetry">
+               <property name="text">
+                <string>倾斜摄影</string>
+               </property>
+               <property name="icon">
+                <iconset resource="Res.qrc">
+                 <normaloff>:/Res/photogrammetry.png</normaloff>:/Res/photogrammetry.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>32</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="tBNewPhotogrammetry1">
+               <property name="text">
+                <string>三维模型</string>
+               </property>
+               <property name="icon">
+                <iconset resource="Res.qrc">
+                 <normaloff>:/Res/model.png</normaloff>:/Res/model.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -458,37 +504,31 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="mainTab">
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <property name="documentMode">
+       <bool>false</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>false</bool>
+      </property>
+      <widget class="OSGShowWidget" name="showWidget">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
        <attribute name="title">
-        <string>当前场景</string>
+        <string>新建场景</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="OSGShowWidget" name="showWidget" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>100</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </widget>
     </item>
@@ -508,51 +548,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget">
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="windowTitle">
-    <string>场景数据</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QTreeWidget" name="treeWidget">
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <action name="actionArcGISImage">
    <property name="icon">

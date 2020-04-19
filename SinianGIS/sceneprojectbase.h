@@ -2,6 +2,8 @@
 #define SCENEPROJECTBASE_H
 
 #include <string>
+#include <QJsonObject>
+#include <QJsonArray>
 
 class SceneProjectBase
 {
@@ -16,6 +18,8 @@ public:
 protected:
     std::string projectFilePath;
     std::string appDir;
+
+    QJsonObject projectJSON;
 };
 
 #endif // SCENEPROJECTBASE_H

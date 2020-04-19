@@ -11,5 +11,9 @@
         <file>Res/vector.png</file>
         <file>Res/ArcGIS.png</file>
         <file>Res/bing.png</file>
+        <file>Res/save.png</file>
+        <file>Res/photogrammetry.png</file>
+        <file>Res/model.png</file>
+        <file>Res/photogrammetry_data.gif</file>
     </qresource>
 </RCC>
