@@ -24,4 +24,4 @@
 4. 支持二三维数据联动
 5. 三维卷帘与二维卷帘
 
-[imglink1]:README/1.png
+[imglink1]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/1.PNG
