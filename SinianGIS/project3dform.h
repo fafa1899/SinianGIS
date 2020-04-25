@@ -21,10 +21,22 @@ public:
 
     void LoadProject3d(std::shared_ptr<SceneProject3D> sceneProject3D);
 
+    void AddTerrain(std::string fileName);
+    void AddImage(std::string fileName);
+    void AddVector();
+    void AddTiltingData(std::string fileName);
+
+signals:
+    void signalViewPoint(std::string name);
+    void signalTerrainViewPoint();
+    void signalImageViewPoint();
+    void signalTiltingDataViewPoint();
+
 protected:
     QTreeWidgetItem* terrainItem;
     QTreeWidgetItem* imageItem;
     QTreeWidgetItem* vectorItem;
+    QTreeWidgetItem* tiltingDataItem;
 
     std::shared_ptr<SceneProject3D> sceneProject3D;
 
@@ -32,8 +44,13 @@ protected:
     QIcon terrainIcon;
     QIcon imageIcon;
     QIcon vectorIcon;
+    QIcon tiltingDataIcon;
+
+private slots:
+    void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
+
     Ui::Project3DForm *ui;
 };
 

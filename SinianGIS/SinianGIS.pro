@@ -37,10 +37,14 @@ SOURCES += \
     osgshowwidget.cpp \
     project3dform.cpp \
     sceneproject3d.cpp \
-    sceneprojectbase.cpp
+    sceneprojectbase.cpp \
+    tinyxml/tinyxml.cpp \
+    tinyxml/tinyxmlerror.cpp \
+    tinyxml/tinyxmlparser.cpp
 
 HEADERS += \
     ExceptionDmp.h \
+    StdStringEx.hpp \
     ViewWidget \
     loadphotogrammetrydialog.h \
     mainwindow.h \
@@ -48,7 +52,8 @@ HEADERS += \
     pathref.hpp \
     project3dform.h \
     sceneproject3d.h \
-    sceneprojectbase.h
+    sceneprojectbase.h \
+    tinyxml/tinyxml.h
 
 FORMS += \
     loadphotogrammetrydialog.ui \
@@ -62,10 +67,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
     D:/Work/OSGNewBuild/osgearth-2.10.1/src \
-    D:/Work/Library/nlohmann/single_include
+    D:/Work/Library/nlohmann/single_include \
+    D:/Work/GDALBuild/gdal-2.4.2/install/include
 
 LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
-    -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil
+    -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil\
+    -LD:/Work/GDALBuild/gdal-2.4.2/install/lib -lgdal_i
 
 DESTDIR = $$PWD/../bin
 

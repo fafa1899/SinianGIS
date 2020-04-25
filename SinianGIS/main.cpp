@@ -1,10 +1,23 @@
 #include "mainwindow.h"
 #include "osgshowwidget.h"
+#include "pathref.hpp"
+#include "ViewWidget"
 
+#include <iostream>
+#include <gdal_priv.h>
 #include <QApplication>
 #include <QStyleFactory>
 
-#include "ViewWidget"
+using namespace std;
+
+void InitGDALEnvi()
+{
+    GDALAllRegister();
+    CPLSetConfigOption("GDAL_FILENAME_IS_UTF8", "NO");  //支持中文路径
+    CPLSetConfigOption("SHAPE_ENCODING", "");  //解决中文乱码问题
+    string dir = PathRef::GetAppDir() + "/Resource/gdal_data";
+    CPLSetConfigOption("GDAL_DATA", dir.c_str());
+}
 
 int main(int argc, char *argv[])
 {
@@ -12,10 +25,12 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-//    OSGShowWidget* viewWidget = new OSGShowWidget();
-//    viewWidget->setGeometry( 100, 100, 800, 600 );
-//    viewWidget->show();
-//    viewWidget->onStartTimer();
+    //    OSGShowWidget* viewWidget = new OSGShowWidget();
+    //    viewWidget->setGeometry( 100, 100, 800, 600 );
+    //    viewWidget->show();
+    //    viewWidget->onStartTimer();
+
+    InitGDALEnvi();
 
     MainWindow mainWindow;
     mainWindow.show();

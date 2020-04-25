@@ -502,7 +502,7 @@
     <item>
      <widget class="QTabWidget" name="centralTabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -519,17 +519,6 @@
       <property name="tabBarAutoHide">
        <bool>false</bool>
       </property>
-      <widget class="OSGShowWidget" name="showWidget">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <attribute name="title">
-        <string>新建场景</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -589,14 +578,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>OSGShowWidget</class>
-   <extends>QWidget</extends>
-   <header>osgshowwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="Res.qrc"/>
  </resources>

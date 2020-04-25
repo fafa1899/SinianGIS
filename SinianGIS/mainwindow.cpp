@@ -4,11 +4,13 @@
 #include "pathref.hpp"
 #include "project3dform.h"
 #include "loadphotogrammetrydialog.h"
+#include "osgshowwidget.h"
 
 #include <QDockWidget>
 #include <QMenu>
 #include <QFileDialog>
 #include <QDebug>
+#include <QMessageBox>
 
 #include <iostream>
 
@@ -18,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    initWindow = false;
+
     ui->setupUi(this);
 
     //设置ribbon
@@ -39,17 +43,30 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tBBing->setMenu(BingMenu);
     ui->tBBing->setPopupMode(QToolButton::InstantPopup);
 
-    //停靠
-    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit("场景数据"), this);
+    std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
+    OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
+    tabWidget->setMinimumSize(QSize(100, 100));
+    tabWidget->load3DProject(_3dProject);
+
+    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit("新建"));
+    ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
+
+    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit("新建"), this);
     projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
     Project3DForm *project3DForm = new Project3DForm(projectDock);
+    project3DForm->LoadProject3d(_3dProject);
     projectDock->setWidget(project3DForm);
     addDockWidget(Qt::LeftDockWidgetArea, projectDock);
-    leftDockList.push_back(projectDock);
 
-    sceneProject3D = make_shared<SceneProject3D>();
-    ui->showWidget->load3DProject(sceneProject3D);
-    project3DForm->LoadProject3d(sceneProject3D);
+    connect(project3DForm, &Project3DForm::signalViewPoint, tabWidget, &OSGShowWidget::slotViewPoint);
+    //connect(annotationHandler, &AnnotationHandler::signalPointAttributeDlg, this, &AnySceneWidget::signalAnnoPointAttributeDlg);
+
+    curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
+    curLeftDock = projectDock;
+    projectMap.insert(make_pair("新建", curProj));
+    leftDockMap.insert(make_pair("新建", curLeftDock));
+
+    initWindow = true;
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +77,13 @@ MainWindow::~MainWindow()
 void MainWindow::show()
 {
     QWidget::show();
-    ui->showWidget->onStartTimer();
+    //ui->showWidget->onStartTimer();
+
+    OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->currentWidget());
+    if(widget && !widget->isWork())
+    {
+        widget->onStartTimer();
+    }
 }
 
 void MainWindow::on_tBNewProject_clicked()
@@ -78,28 +101,59 @@ void MainWindow::on_tBNewImageLayer_clicked()
     }
 
     QByteArray path = filePath.toLocal8Bit();
-    sceneProject3D->AddLocalImage(path.data());
-    ui->showWidget->CalTerrainLayerViewPoint(path.data());
+
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddLocalImage(path.data());
+        OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->currentWidget());
+        if(widget)
+        {
+            widget->SetTerrainLayerViewPoint(path.data());
+        }
+
+        Project3DForm* dock = dynamic_cast<Project3DForm*>(curLeftDock->widget());
+        if(dock)
+        {
+            dock->AddImage(path.data());
+        }
+    }
 }
 
 void MainWindow::on_actionArcGISImage_triggered()
 {
-    sceneProject3D->AddArcGISImagery();
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddArcGISImagery();
+    }
 }
 
 void MainWindow::on_actionArcGISTerrain_triggered()
 {
-    sceneProject3D->AddArcGISTerrainImagery();
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddArcGISTerrainImagery();
+    }
 }
 
 void MainWindow::on_actionBingImage_triggered()
 {
-    sceneProject3D->AddBingImagery();
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddBingImagery();
+    }
 }
 
 void MainWindow::on_actionBingTerrain_triggered()
 {
-    sceneProject3D->AddBingTerrain();
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddBingTerrain();
+    }
 }
 
 void MainWindow::on_tBNewTerrainLayer_clicked()
@@ -113,8 +167,23 @@ void MainWindow::on_tBNewTerrainLayer_clicked()
     }
 
     QByteArray path = filePath.toLocal8Bit();
-    sceneProject3D->AddLocalTerrain(path.data());
-    ui->showWidget->CalTerrainLayerViewPoint(path.data());
+
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddLocalTerrain(path.data());
+        OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->currentWidget());
+        if(widget)
+        {
+            widget->SetTerrainLayerViewPoint(path.data());
+        }
+
+        Project3DForm* dock = dynamic_cast<Project3DForm*>(curLeftDock->widget());
+        if(dock)
+        {
+            dock->AddTerrain(path.data());
+        }
+    }
 }
 
 void MainWindow::on_tBSaveProject_clicked()
@@ -127,7 +196,12 @@ void MainWindow::on_tBSaveProject_clicked()
         return;
     }
     QByteArray path = fileName.toLocal8Bit();
-    sceneProject3D->write(path.data());
+
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->write(path.data());
+    }
 }
 
 void MainWindow::on_tBOpenProject_clicked()
@@ -140,7 +214,7 @@ void MainWindow::on_tBOpenProject_clicked()
         return;
     }
     QByteArray path = filePath.toLocal8Bit();
-    string name = PathRef::GetNameWithFormat(path.data());
+    string name = PathRef::DirOrPathGetName(path.data());
 
     OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
     ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
@@ -150,27 +224,39 @@ void MainWindow::on_tBOpenProject_clicked()
     _3dProject->read(path.data());
     tabWidget->load3DProject(_3dProject);
 
-    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit("场景数据11"), this);
+    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit(name.c_str()), this);
     projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
     Project3DForm *project3DForm = new Project3DForm(projectDock);
     projectDock->setWidget(project3DForm);
     addDockWidget(Qt::LeftDockWidgetArea, projectDock);
 
-    tabifyDockWidget(leftDockList.back(), projectDock);
-    leftDockList.push_back(projectDock);
+    tabifyDockWidget(curLeftDock, projectDock);
+    //leftDockList.push_back(projectDock);
 
     project3DForm->LoadProject3d(_3dProject);
     projectDock->setVisible(true); //要先设置可见才能显示
     projectDock->raise();
+
+    connect(project3DForm, &Project3DForm::signalViewPoint, tabWidget, &OSGShowWidget::slotViewPoint);
+
+    curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
+    curLeftDock = projectDock;
+    projectMap.insert(make_pair(path.data(), curProj));
+    leftDockMap.insert(make_pair(path.data(), curLeftDock));
 }
 
 void MainWindow::on_centralTabWidget_currentChanged(int index)
 {
+    if(!initWindow)
+    {
+        return;
+    }
+
     for (int i = 0; i < ui->centralTabWidget->count(); i++)
     {
         if( i == index)
         {
-            OSGShowWidget *widget = static_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
+            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
             if(widget && !widget->isWork())
             {
                 widget->onStartTimer();
@@ -178,7 +264,7 @@ void MainWindow::on_centralTabWidget_currentChanged(int index)
         }
         else
         {
-            OSGShowWidget *widget = static_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
+            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
             if(widget && widget->isWork())
             {
                 widget->onStopTimer();
@@ -207,6 +293,33 @@ void MainWindow::closeEvent(QCloseEvent *e)
 
 void MainWindow::on_tBNewPhotogrammetry_clicked()
 {
-    LoadPhotogrammetryDialog loadDialog;
-    loadDialog.exec();
+    LoadPhotogrammetryDialog loadDialog(this);
+    if(QDialog::Rejected == loadDialog.exec())
+    {
+        return;
+    }
+
+    string dir = loadDialog.GetDataDir();
+    if(dir.empty())
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("文件夹不能为空"));
+        return;
+    }
+
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddPhotogrammetry(dir);
+        OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->currentWidget());
+        if(widget)
+        {
+            widget->SetNodeViewPoint(dir.data());
+        }
+
+        Project3DForm* dock = dynamic_cast<Project3DForm*>(curLeftDock->widget());
+        if(dock)
+        {
+            dock->AddTiltingData(dir.data());
+        }
+    }
 }

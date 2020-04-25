@@ -2,9 +2,12 @@
 #define PATHREF_H
 
 #include <string>
+#include <vector>
 #include <QApplication>
+#include <QDir>
 
 using std::string;
+using std::vector;
 
 class PathRef
 {
@@ -85,6 +88,41 @@ public:
     {
         QByteArray currentDir = QCoreApplication::applicationDirPath().toLocal8Bit();
         return currentDir.data();
+    }
+
+    //查找目录下所有的文件夹
+    static void findDir(string dir, vector<string>& subDirs)
+    {
+        //
+        subDirs.clear();
+        QDir fromDir(QString::fromLocal8Bit(dir.c_str()));
+        QStringList filters;
+
+        //
+        QFileInfoList fileInfoList = fromDir.entryInfoList(filters, QDir::AllDirs|QDir::Files);
+        foreach(QFileInfo fileInfo, fileInfoList)
+        {
+            if (fileInfo.fileName() == "." || fileInfo.fileName() == "..")
+            {
+                continue;
+            }
+
+            if (fileInfo.isDir())
+            {
+                QByteArray dir = fileInfo.filePath().toLocal8Bit();
+                subDirs.push_back(dir.data());
+            }
+        }
+    }
+
+    static bool isDirExist(std::string filePath)//定义
+    {
+        QFile mFile(QString::fromLocal8Bit(filePath.c_str()));
+        if(mFile.exists())
+        {
+            return true;
+        }
+        return false;
     }
 
     const static char slash = '/';

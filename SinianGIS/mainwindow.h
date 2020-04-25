@@ -27,10 +27,14 @@ signals:
 protected:
     void closeEvent(QCloseEvent *e);
 
-    std::shared_ptr<SceneProject3D> sceneProject3D;
-    std::vector<QDockWidget *> leftDockList;
+    std::map<std::string, std::shared_ptr<SceneProjectBase>> projectMap;
+    std::map<std::string, QDockWidget *> leftDockMap;
 
-    //std::vector<std::shared_ptr<SceneProject3D>> _3dProjectList;
+    std::shared_ptr<SceneProjectBase> curProj;
+    QDockWidget *curLeftDock;
+
+
+    bool initWindow;
 
 private slots:
     void on_tBNewProject_clicked();

@@ -2,12 +2,20 @@
 #include "ui_project3dform.h"
 #include "pathref.hpp"
 
+#include <iostream>
+#include <QDebug>
+
+using namespace std;
+
+Q_DECLARE_METATYPE(std::string);
+
 Project3DForm::Project3DForm(QWidget *parent) :
     QWidget(parent), sceneProject3D(nullptr),
     mainIcon(":/Res/main.png"),
     terrainIcon(":/Res/terrain.png"),
     imageIcon(":/Res/image.png"),
     vectorIcon(":/Res/vector.png"),
+    tiltingDataIcon(":/Res/photogrammetry.png"),
     ui(new Ui::Project3DForm)
 {
     ui->setupUi(this);
@@ -40,11 +48,12 @@ Project3DForm::Project3DForm(QWidget *parent) :
     vectorItem->setCheckState(0, Qt::Checked);
     vectorItem->setIcon(0, vectorIcon);
 
-//    //
-//    QTreeWidgetItem* tiltingDataItem = new QTreeWidgetItem();
-//    tiltingDataItem->setText(0, QString::fromLocal8Bit("场景数据(倾斜摄影)"));
-//    root->addChild(tiltingDataItem);
-//    tiltingDataItem->setCheckState(0, Qt::Checked);
+    //
+    tiltingDataItem = new QTreeWidgetItem(root);
+    tiltingDataItem->setText(0, QString::fromLocal8Bit("倾斜摄影数据"));
+    root->addChild(tiltingDataItem);
+    tiltingDataItem->setCheckState(0, Qt::Checked);
+    tiltingDataItem->setIcon(0, tiltingDataIcon);
 
 //    //
 //    QTreeWidgetItem* modelDataItem = new QTreeWidgetItem();
@@ -70,14 +79,76 @@ void Project3DForm::LoadProject3d(std::shared_ptr<SceneProject3D> project)
         if (value.isString())
         {
             QByteArray v = value.toString().toLocal8Bit();
-
-            QTreeWidgetItem *subItem = new QTreeWidgetItem(imageItem);
-            string name = PathRef::DirOrPathGetName(v.data());
-            subItem->setText(0, QString::fromLocal8Bit(name.c_str()));
-            imageItem->addChild(subItem);
-            subItem->setCheckState(0, Qt::Checked);
-            QIcon imageIcon(":/Res/image.png");
-            subItem->setIcon(0, imageIcon);
+            AddImage(v.data());
         }
+    }
+
+    for (int i = 0; i < sceneProject3D->localTerrainArray.size(); i++)
+    {
+        QJsonValue value = sceneProject3D->localTerrainArray.at(i);
+        if (value.isString())
+        {
+            QByteArray v = value.toString().toLocal8Bit();
+            AddTerrain(v.data());
+        }
+    }
+
+    for (int i = 0; i < sceneProject3D->obliquePhotographyArray.size(); i++)
+    {
+        QJsonValue value = sceneProject3D->obliquePhotographyArray.at(i);
+        if (value.isString())
+        {
+            QByteArray v = value.toString().toLocal8Bit();
+            AddTiltingData(v.data());
+        }
+    }
+
+}
+
+void Project3DForm::AddTerrain(std::string fileName)
+{
+    QTreeWidgetItem *subItem = new QTreeWidgetItem(terrainItem);
+    string name = PathRef::DirOrPathGetName(fileName);
+    subItem->setText(0, QString::fromLocal8Bit(name.c_str()));
+    terrainItem->addChild(subItem);
+    subItem->setCheckState(0, Qt::Checked);
+    subItem->setIcon(0, terrainIcon);
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue(fileName));
+}
+
+void Project3DForm::AddImage(std::string fileName)
+{
+    QTreeWidgetItem *subItem = new QTreeWidgetItem(imageItem);
+    string name = PathRef::DirOrPathGetName(fileName);
+    subItem->setText(0, QString::fromLocal8Bit(name.c_str()));
+    imageItem->addChild(subItem);
+    subItem->setCheckState(0, Qt::Checked);
+    subItem->setIcon(0, imageIcon);
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue(fileName));
+}
+
+void Project3DForm::AddVector()
+{
+
+}
+
+void Project3DForm::AddTiltingData(std::string fileName)
+{
+    QTreeWidgetItem *subItem = new QTreeWidgetItem(tiltingDataItem);
+    string name = PathRef::DirOrPathGetName(fileName);
+    subItem->setText(0, QString::fromLocal8Bit(name.c_str()));
+    tiltingDataItem->addChild(subItem);
+    subItem->setCheckState(0, Qt::Checked);
+    subItem->setIcon(0, tiltingDataIcon);
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue(fileName));
+}
+
+void Project3DForm::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    QTreeWidgetItem *parent = item->parent();
+    if(parent == terrainItem || parent == imageItem || parent == vectorItem || parent == tiltingDataItem)
+    {
+        string name = item->data(0, Qt::UserRole).value<std::string>();
+        signalViewPoint(name);
     }
 }

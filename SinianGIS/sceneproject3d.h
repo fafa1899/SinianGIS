@@ -24,7 +24,7 @@ public:
 
     void AddLocalImage(std::string filePath);
     void AddLocalTerrain(std::string filePath);
-    void AddPhotogrammetry();
+    bool AddPhotogrammetry(std::string fileDir);
 
     void AddArcGISImagery();
     void AddArcGISTerrainImagery();
@@ -33,10 +33,16 @@ public:
     void AddBingTerrain();
 
     void insertViewPoint(std::string name, std::shared_ptr<osgEarth::Viewpoint> vp);
+    std::shared_ptr<osgEarth::Viewpoint> getViewPoint(std::string name);
 
     //
     QJsonArray localImageArray;
     QJsonArray localTerrainArray;
+    QJsonArray obliquePhotographyArray;
+
+//signals:
+
+
 
 protected:
     void InitEarthMapNode();
@@ -44,6 +50,12 @@ protected:
 
     void AddArcGISDrivers(std::string name, std::string url);
     bool CalViewPointGeoExtend(const osgEarth::GeoExtent& extent, std::shared_ptr<osgEarth::Viewpoint> out);
+
+    void createObliqueIndexes(std::string fileDir);      //读取倾斜摄影数据的元数据
+    bool readObliqueXML(std::string metaXML, double& x, double& y, double &z);      //读取倾斜摄影数据的元数据
+
+    void ReadViewPoint();
+    void SaveViewPoint();
 
     osg::ref_ptr<osg::Group> root;
     osg::ref_ptr<osgEarth::Map> map;

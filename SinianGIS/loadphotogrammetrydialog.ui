@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
-    <height>161</height>
+    <width>552</width>
+    <height>307</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;加载倾斜摄影模型数据，数据的格式形如：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1.加载倾斜摄影模型数据，数据的格式形如：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -25,6 +25,13 @@
     <widget class="QLabel" name="labelGIF">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;2.文件夹需指定为包含Data目录的文件夹。&lt;/p&gt;&lt;p&gt;3.第一次加载会根据Data目录中的数据生成Data.osgb索引文件，再次加载数据会直接加载这个文件。&lt;/p&gt;&lt;p&gt;4.如果Data目录中的数据被改动，手动删除Data.osgb索引文件再次加载即可。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -44,10 +51,10 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lEDir"/>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="pBDir">
        <property name="text">
         <string>...</string>
        </property>
@@ -71,14 +78,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButtonOK">
        <property name="text">
         <string>确定</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="pushButtonCancel">
        <property name="text">
         <string>取消</string>
        </property>

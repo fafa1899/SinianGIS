@@ -20,7 +20,6 @@ SceneProjectBase::SceneProjectBase()
 
 SceneProjectBase::~SceneProjectBase()
 {
-
 }
 
 void SceneProjectBase::read(std::string path)

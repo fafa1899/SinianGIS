@@ -2,6 +2,9 @@
 #include "ui_loadphotogrammetrydialog.h"
 
 #include <QMovie>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDebug>
 
 LoadPhotogrammetryDialog::LoadPhotogrammetryDialog(QWidget *parent) :
     QDialog(parent),
@@ -20,4 +23,32 @@ LoadPhotogrammetryDialog::LoadPhotogrammetryDialog(QWidget *parent) :
 LoadPhotogrammetryDialog::~LoadPhotogrammetryDialog()
 {
     delete ui;
+}
+
+void LoadPhotogrammetryDialog::on_pushButtonOK_clicked()
+{
+    QString dirPath = ui->lEDir->text();
+    if(dirPath.isEmpty() || dirPath.isNull())
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("文件夹不能为空"));
+        return;
+    }
+
+    QByteArray path = dirPath.toLocal8Bit();
+    dataDir = path.data();
+    QDialog::accept();
+}
+
+void LoadPhotogrammetryDialog::on_pushButtonCancel_clicked()
+{
+    QDialog::reject();
+}
+
+void LoadPhotogrammetryDialog::on_pBDir_clicked()
+{
+    //QString dir = QString::fromLocal8Bit("D:/Data/scene/Dayanta");
+    QString dir = QString::fromLocal8Bit("D:/Data/hhsx");
+
+    QString dirPath = QFileDialog::getExistingDirectory(this,QString::fromLocal8Bit("选择倾斜摄影数据文件夹："), dir);
+    ui->lEDir->setText(dirPath);
 }
