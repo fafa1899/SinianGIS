@@ -1,5 +1,6 @@
 #include "osgshowwidget.h"
 #include "ViewWidget"
+#include "pathref.hpp"
 
 #include <QLayout>
 #include <QMessageBox>

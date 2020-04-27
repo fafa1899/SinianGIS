@@ -20,6 +20,7 @@ public:
     osg::ref_ptr<osg::Group> GetRootNode(){return root;}
     osgEarth::Viewpoint *GetHomeViewPoint(){return &homeViewPoint;}
     osg::ref_ptr<osgEarth::Map> GetMap(){return map;}
+    osg::ref_ptr<osgEarth::MapNode> GetMapNode(){return mapNode;}
     QJsonArray& GetImageArray(){return localImageArray;}
 
     void AddLocalImage(std::string filePath);
@@ -35,14 +36,14 @@ public:
     void insertViewPoint(std::string name, std::shared_ptr<osgEarth::Viewpoint> vp);
     std::shared_ptr<osgEarth::Viewpoint> getViewPoint(std::string name);
 
+    void AddSkyBox();
+
     //
     QJsonArray localImageArray;
     QJsonArray localTerrainArray;
     QJsonArray obliquePhotographyArray;
 
 //signals:
-
-
 
 protected:
     void InitEarthMapNode();

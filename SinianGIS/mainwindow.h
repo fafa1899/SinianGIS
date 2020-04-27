@@ -33,7 +33,6 @@ protected:
     std::shared_ptr<SceneProjectBase> curProj;
     QDockWidget *curLeftDock;
 
-
     bool initWindow;
 
 private slots:

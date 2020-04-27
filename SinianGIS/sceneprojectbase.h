@@ -15,6 +15,8 @@ public:
     virtual void read(std::string path)=0;
     virtual void write(std::string path)=0;
 
+    std::string getFileName(){return projectFilePath;}
+
 protected:
     std::string projectFilePath;
     std::string appDir;

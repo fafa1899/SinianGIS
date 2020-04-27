@@ -18,10 +18,12 @@
 
 #include <osgEarthDrivers/gdal/GDALOptions>
 #include <osgEarthDrivers/cache_filesystem/FileSystemCache>
-//#include <osgEarthDrivers/feature_ogr/OGRFeatureOptions>
-//#include <osgEarthDrivers/model_feature_geom/FeatureGeomModelOptions>
 #include <osgEarthDrivers/bing/BingOptions>
 #include <osgEarthDrivers/arcgis/ArcGISOptions>
+#include <osgEarthDrivers/sky_simple/SimpleSkyOptions>
+
+//#include <osgEarthDrivers/feature_ogr/OGRFeatureOptions>
+//#include <osgEarthDrivers/model_feature_geom/FeatureGeomModelOptions>
 //#include <osgEarthDrivers/tms/TMSOptions>
 //#include <osgEarthDrivers/tilecache/TileCacheOptions>
 
@@ -37,6 +39,7 @@ SceneProject3D::SceneProject3D()
 {
     root = new osg::Group();
     InitEarthMapNode();
+    AddSkyBox();
     InitViewPoint();
 }
 
@@ -220,6 +223,28 @@ void SceneProject3D::InitEarthMapNode()
     gdal.url() = appDir + "/Resource/BlueMarbleNASA.jpg";
     osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer("BlueMarble", gdal);
     map->addLayer(layer);
+}
+
+void SceneProject3D::AddSkyBox()
+{
+    //
+    osgEarth::SimpleSky::SimpleSkyOptions options;
+    options.atmosphereVisible() = true;
+    options.atmosphericLighting() = false;
+    options.sunVisible() = true;
+    options.moonVisible() = true;
+    options.starsVisible() = true;
+    string moonImage = PathRef::GetAppDir() + "/Resource/moon_1024x512.jpg";
+    options.moonImageURI() = moonImage;
+    options.ambient() = 0.36f;
+
+    //
+    osg::ref_ptr<osgEarth::SimpleSky::SkyNode> skyNode = osgEarth::SimpleSky::SkyNode::create(options, mapNode);
+    root->addChild(skyNode);
+    //skyNode->addChild(mapNode);
+
+    osgEarth::DateTime d = skyNode->getDateTime();
+    skyNode->setDateTime(osgEarth::DateTime(d.year(), d.month(), d.day(), 4.0)); // 格林尼治，时差8小时
 }
 
 //设置初始视点

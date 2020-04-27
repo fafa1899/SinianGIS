@@ -13,9 +13,13 @@
 
 using namespace std;
 
+static int projIndex = 0;
+
 SceneProjectBase::SceneProjectBase()
 {
     appDir = PathRef::GetAppDir();
+    projectFilePath = "ÐÂ½¨_";
+    projectFilePath = projectFilePath + to_string(projIndex++);
 }
 
 SceneProjectBase::~SceneProjectBase()

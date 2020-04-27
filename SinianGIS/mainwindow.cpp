@@ -44,14 +44,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tBBing->setPopupMode(QToolButton::InstantPopup);
 
     std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
+    string name = PathRef::DirOrPathGetName(_3dProject->getFileName());
+
     OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
     tabWidget->setMinimumSize(QSize(100, 100));
     tabWidget->load3DProject(_3dProject);
 
-    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit("新建"));
+    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
     ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
 
-    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit("新建"), this);
+    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit(name.c_str()), this);
     projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
     Project3DForm *project3DForm = new Project3DForm(projectDock);
     project3DForm->LoadProject3d(_3dProject);
@@ -63,8 +65,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
     curLeftDock = projectDock;
-    projectMap.insert(make_pair("新建", curProj));
-    leftDockMap.insert(make_pair("新建", curLeftDock));
+    projectMap.insert(make_pair(_3dProject->getFileName(), curProj));
+    leftDockMap.insert(make_pair(_3dProject->getFileName(), curLeftDock));
 
     initWindow = true;
 }
@@ -214,14 +216,14 @@ void MainWindow::on_tBOpenProject_clicked()
         return;
     }
     QByteArray path = filePath.toLocal8Bit();
-    string name = PathRef::DirOrPathGetName(path.data());
+
+    std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
+    _3dProject->read(path.data());
+    string name = PathRef::DirOrPathGetName(_3dProject->getFileName());
 
     OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
     ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
     ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
-
-    std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
-    _3dProject->read(path.data());
     tabWidget->load3DProject(_3dProject);
 
     QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit(name.c_str()), this);
@@ -241,8 +243,8 @@ void MainWindow::on_tBOpenProject_clicked()
 
     curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
     curLeftDock = projectDock;
-    projectMap.insert(make_pair(path.data(), curProj));
-    leftDockMap.insert(make_pair(path.data(), curLeftDock));
+    projectMap.insert(make_pair(_3dProject->getFileName(), curProj));
+    leftDockMap.insert(make_pair(_3dProject->getFileName(), curLeftDock));
 }
 
 void MainWindow::on_centralTabWidget_currentChanged(int index)
