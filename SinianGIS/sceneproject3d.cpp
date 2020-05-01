@@ -217,10 +217,12 @@ void SceneProject3D::InitEarthMapNode()
     //创建地图节点
     map = new osgEarth::Map(mapOpts);
     mapNode = new osgEarth::MapNode(map);
-    root->addChild(mapNode);
+    //root->addChild(mapNode);
 
     osgEarth::Drivers::GDALOptions gdal;
-    gdal.url() = appDir + "/Resource/BlueMarbleNASA.jpg";
+    //gdal.url() = appDir + "/Resource/BlueMarbleNASA.jpg";
+    //gdal.url() = appDir + "/Resource/World_e-Atlas_Bright-BMNG-200404.tiff";
+    gdal.url() = appDir + "/Resource/baseMap.jpg";
     osg::ref_ptr<osgEarth::ImageLayer> layer = new osgEarth::ImageLayer("BlueMarble", gdal);
     map->addLayer(layer);
 }
@@ -236,12 +238,12 @@ void SceneProject3D::AddSkyBox()
     options.starsVisible() = true;
     string moonImage = PathRef::GetAppDir() + "/Resource/moon_1024x512.jpg";
     options.moonImageURI() = moonImage;
-    options.ambient() = 0.36f;
+    //options.ambient() = 0.25f;
 
     //
     osg::ref_ptr<osgEarth::SimpleSky::SkyNode> skyNode = osgEarth::SimpleSky::SkyNode::create(options, mapNode);
     root->addChild(skyNode);
-    //skyNode->addChild(mapNode);
+    skyNode->addChild(mapNode);
 
     osgEarth::DateTime d = skyNode->getDateTime();
     skyNode->setDateTime(osgEarth::DateTime(d.year(), d.month(), d.day(), 4.0)); // 格林尼治，时差8小时

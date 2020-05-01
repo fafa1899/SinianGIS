@@ -18,6 +18,8 @@ public:
     explicit OSGShowWidget(QWidget *parent = nullptr);
     ~OSGShowWidget();
 
+    void destory();
+
     bool load3DProject(std::shared_ptr<SceneProject3D> project);
 
     void SetTerrainLayerViewPoint(std::string name);
@@ -30,6 +32,8 @@ public:
 
     bool isWork(){return bWork;}
 
+    std::string GetName(){return sceneProject3D?sceneProject3D->getFileName():"";}
+
 protected:
     //virtual void paintEvent(QPaintEvent* e);
     virtual void timerEvent(QTimerEvent* );
@@ -39,7 +43,7 @@ protected:
     bool CalViewPointGeoExtend(const osgEarth::GeoExtent& extent, std::shared_ptr<osgEarth::Viewpoint> out);
     bool CalViewPointNode(osg::ref_ptr<osg::Node> node, std::shared_ptr<osgEarth::Viewpoint> out);
 
-    QTimer                     _timer;
+    //QTimer                     _timer;
     int _timerID;               //¶¨Ê±Æ÷ID
     osgViewer::CompositeViewer _viewer;
 

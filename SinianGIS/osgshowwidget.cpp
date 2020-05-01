@@ -39,6 +39,15 @@ OSGShowWidget::~OSGShowWidget()
     }
 }
 
+void OSGShowWidget::destory()
+{
+    if(viewWidget)
+    {
+        delete viewWidget;
+        viewWidget = nullptr;
+    }
+}
+
 bool OSGShowWidget::load3DProject(std::shared_ptr<SceneProject3D> project)
 {
     this->sceneProject3D = project;

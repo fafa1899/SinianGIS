@@ -243,8 +243,8 @@ void MainWindow::on_tBOpenProject_clicked()
 
     curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
     curLeftDock = projectDock;
-    projectMap.insert(make_pair(_3dProject->getFileName(), curProj));
-    leftDockMap.insert(make_pair(_3dProject->getFileName(), curLeftDock));
+    projectMap[_3dProject->getFileName()] = curProj;
+    leftDockMap[_3dProject->getFileName()] = curLeftDock;
 }
 
 void MainWindow::on_centralTabWidget_currentChanged(int index)
@@ -277,13 +277,80 @@ void MainWindow::on_centralTabWidget_currentChanged(int index)
 
 void MainWindow::on_centralTabWidget_tabCloseRequested(int index)
 {
-    QWidget *pItemWidget = ui->centralTabWidget->widget(index);
-    if (pItemWidget)
+    OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(index));
+    if(widget && widget->isWork())
     {
-        delete pItemWidget;
-        pItemWidget = nullptr;
+        widget->onStopTimer();
+    }
+
+    ui->centralTabWidget->removeTab(index);
+}
+
+/*
+void MainWindow::on_centralTabWidget_currentChanged(int index)
+{
+    if(!initWindow)
+    {
+        return;
+    }
+
+    for (int i = 0; i < ui->centralTabWidget->count(); i++)
+    {
+        if( i == index)
+        {
+            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
+            if(widget && !widget->isWork())
+            {
+                cout<<"1111"<<endl;
+                widget->onStartTimer();
+
+                auto pit = projectMap.find(widget->GetName());
+                if(pit != projectMap.end())
+                {
+                    curProj = pit->second;
+                }
+
+                auto dit = leftDockMap.find(widget->GetName());
+                if(dit != leftDockMap.end())
+                {
+                    curLeftDock = dit->second;
+                    curLeftDock->raise();
+                }
+            }
+        }
+        else
+        {
+            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
+            if(widget && widget->isWork())
+            {
+                widget->onStopTimer();
+            }
+        }
     }
 }
+
+void MainWindow::on_centralTabWidget_tabCloseRequested(int index)
+{
+    OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(index));
+    if(widget)
+    {
+        auto pit = projectMap.find(widget->GetName());
+        if(pit != projectMap.end())
+        {
+            projectMap.erase(pit);
+        }
+
+        auto dit = leftDockMap.find(widget->GetName());
+        if(dit != leftDockMap.end())
+        {
+            dit->second->close();
+            leftDockMap.erase(dit);
+        }
+
+        delete widget;
+        widget = nullptr;
+    }
+}*/
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
