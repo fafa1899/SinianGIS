@@ -2,6 +2,7 @@
 #include "osgshowwidget.h"
 #include "pathref.hpp"
 #include "ViewWidget"
+#include "Settings.h"
 
 #include <iostream>
 #include <gdal_priv.h>
@@ -9,6 +10,8 @@
 #include <QStyleFactory>
 
 using namespace std;
+
+QSettings* gSettings = nullptr;
 
 void InitGDALEnvi()
 {
@@ -25,10 +28,10 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    //    OSGShowWidget* viewWidget = new OSGShowWidget();
-    //    viewWidget->setGeometry( 100, 100, 800, 600 );
-    //    viewWidget->show();
-    //    viewWidget->onStartTimer();
+    //QSettings能记录一些程序中的信息，下次再打开时可以读取出来
+    string iniPath = PathRef::GetAppDir() + "/SinianGIS.ini";
+    QSettings setting(QString::fromLocal8Bit(iniPath.c_str()), QSettings::IniFormat);
+    gSettings = &setting;
 
     InitGDALEnvi();
 

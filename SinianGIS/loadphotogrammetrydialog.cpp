@@ -1,5 +1,6 @@
 #include "loadphotogrammetrydialog.h"
 #include "ui_loadphotogrammetrydialog.h"
+#include "Settings.h"
 
 #include <QMovie>
 #include <QFileDialog>
@@ -46,9 +47,13 @@ void LoadPhotogrammetryDialog::on_pushButtonCancel_clicked()
 
 void LoadPhotogrammetryDialog::on_pBDir_clicked()
 {
-    //QString dir = QString::fromLocal8Bit("D:/Data/scene/Dayanta");
-    QString dir = QString::fromLocal8Bit("D:/Data/hhsx");
-
+    QString dir = gSettings->value("ObliquePath").toString();
     QString dirPath = QFileDialog::getExistingDirectory(this,QString::fromLocal8Bit("选择倾斜摄影数据文件夹："), dir);
+    if(dirPath.isNull())
+    {
+        return;
+    }
+    gSettings->setValue("ObliquePath", dirPath);
+
     ui->lEDir->setText(dirPath);
 }

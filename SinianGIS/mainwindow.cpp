@@ -5,6 +5,7 @@
 #include "project3dform.h"
 #include "loadphotogrammetrydialog.h"
 #include "osgshowwidget.h"
+#include "Settings.h"
 
 #include <QDockWidget>
 #include <QMenu>
@@ -74,13 +75,14 @@ void MainWindow::on_tBNewProject_clicked()
 
 void MainWindow::on_tBNewImageLayer_clicked()
 {
-    QString dir = QString::fromLocal8Bit("D:/Data/hunan-laiyan");
+    QString dir = gSettings->value("ImagePath").toString();
     QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开本地影像数据"),
                                                     dir,QString::fromLocal8Bit("本地影像数据(*.tif *.tiff *.img *.jpg *.png);;本地影像数据(*.*)"));
     if(filePath.isNull())
     {
         return;
     }
+    gSettings->setValue("ImagePath", filePath);
 
     QByteArray path = filePath.toLocal8Bit();
 
@@ -140,13 +142,14 @@ void MainWindow::on_actionBingTerrain_triggered()
 
 void MainWindow::on_tBNewTerrainLayer_clicked()
 {
-    QString dir = QString::fromLocal8Bit("D:/Data/hunan-laiyan");
+    QString dir = gSettings->value("TerrainPath").toString();
     QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开本地地形数据"),
                                                     dir,QString::fromLocal8Bit("本地地形数据(*.tif *.img);;本地影像数据(*.*)"));
     if(filePath.isNull())
     {
         return;
     }
+    gSettings->setValue("TerrainPath", filePath);
 
     QByteArray path = filePath.toLocal8Bit();
 
@@ -170,13 +173,15 @@ void MainWindow::on_tBNewTerrainLayer_clicked()
 
 void MainWindow::on_tBSaveProject_clicked()
 {
-    QString dir = QString::fromLocal8Bit("D:/Data/Test");
+    QString dir = gSettings->value("SaveFilePath").toString();
     QString fileName = QFileDialog::getSaveFileName(this,QString::fromLocal8Bit("保存场景工程文件"),dir,
                                                     QString::fromLocal8Bit("场景工程文件(*.sj)"));
     if (fileName.isNull())
     {
         return;
     }
+    gSettings->setValue("SaveFilePath", fileName);
+
     QByteArray path = fileName.toLocal8Bit();
 
     std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
@@ -222,13 +227,15 @@ void MainWindow::loadProject(std::shared_ptr<SceneProject3D> _3dProject)
 
 void MainWindow::on_tBOpenProject_clicked()
 {
-    QString dir = QString::fromLocal8Bit("D:/Data/Test");
+    QString dir = gSettings->value("OpenFilePath").toString();
     QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开场景工程文件"),dir,
                                                     QString::fromLocal8Bit("场景工程文件(*.sj);;本地影像数据(*.*)"));
     if(filePath.isNull())
     {
         return;
     }
+    gSettings->setValue("OpenFilePath", filePath);
+
     QByteArray path = filePath.toLocal8Bit();
 
     std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();

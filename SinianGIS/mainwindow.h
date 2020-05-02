@@ -66,6 +66,7 @@ private slots:
 
     void on_centralTabWidget_tabCloseRequested(int index);
 
+    //加载倾斜摄影数据
     void on_tBNewPhotogrammetry_clicked();
 
     //堆叠的停靠窗口被激活

@@ -45,6 +45,7 @@ SOURCES += \
 
 HEADERS += \
     ExceptionDmp.h \
+    Settings.h \
     StdStringEx.hpp \
     ViewWidget \
     loadphotogrammetrydialog.h \
