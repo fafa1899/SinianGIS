@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     initWindow = false;
+    curProj = nullptr;
+    curLeftDock = nullptr;
 
     ui->setupUi(this);
 
@@ -44,29 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tBBing->setPopupMode(QToolButton::InstantPopup);
 
     std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
-    string name = PathRef::DirOrPathGetName(_3dProject->getFileName());
-
-    OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
-    tabWidget->setMinimumSize(QSize(100, 100));
-    tabWidget->load3DProject(_3dProject);
-
-    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
-    ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
-
-    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit(name.c_str()), this);
-    projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    Project3DForm *project3DForm = new Project3DForm(projectDock);
-    project3DForm->LoadProject3d(_3dProject);
-    projectDock->setWidget(project3DForm);
-    addDockWidget(Qt::LeftDockWidgetArea, projectDock);
-
-    connect(project3DForm, &Project3DForm::signalViewPoint, tabWidget, &OSGShowWidget::slotViewPoint);
-    //connect(annotationHandler, &AnnotationHandler::signalPointAttributeDlg, this, &AnySceneWidget::signalAnnoPointAttributeDlg);
-
-    curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
-    curLeftDock = projectDock;
-    projectMap.insert(make_pair(_3dProject->getFileName(), curProj));
-    leftDockMap.insert(make_pair(_3dProject->getFileName(), curLeftDock));
+    loadProject(_3dProject);
 
     initWindow = true;
 }
@@ -96,7 +76,7 @@ void MainWindow::on_tBNewImageLayer_clicked()
 {
     QString dir = QString::fromLocal8Bit("D:/Data/hunan-laiyan");
     QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开本地影像数据"),
-                                                     dir,QString::fromLocal8Bit("本地影像数据(*.tif *.tiff *.img *.jpg *.png);;本地影像数据(*.*)"));
+                                                    dir,QString::fromLocal8Bit("本地影像数据(*.tif *.tiff *.img *.jpg *.png);;本地影像数据(*.*)"));
     if(filePath.isNull())
     {
         return;
@@ -162,7 +142,7 @@ void MainWindow::on_tBNewTerrainLayer_clicked()
 {
     QString dir = QString::fromLocal8Bit("D:/Data/hunan-laiyan");
     QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开本地地形数据"),
-                                                     dir,QString::fromLocal8Bit("本地地形数据(*.tif *.img);;本地影像数据(*.*)"));
+                                                    dir,QString::fromLocal8Bit("本地地形数据(*.tif *.img);;本地影像数据(*.*)"));
     if(filePath.isNull())
     {
         return;
@@ -206,6 +186,40 @@ void MainWindow::on_tBSaveProject_clicked()
     }
 }
 
+void MainWindow::loadProject(std::shared_ptr<SceneProject3D> _3dProject)
+{
+    string name = PathRef::DirOrPathGetName(_3dProject->getFileName());
+
+    OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
+    if(ui->centralTabWidget->count()==0)
+    {
+        tabWidget->setMinimumSize(QSize(100, 100));
+    }
+
+    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
+    ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
+    tabWidget->load3DProject(_3dProject);
+
+    QDockWidgetEx *projectDock = new QDockWidgetEx(QString::fromLocal8Bit(name.c_str()), this);
+    projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+    Project3DForm *project3DForm = new Project3DForm(projectDock);
+    project3DForm->LoadProject3d(_3dProject);
+    projectDock->setWidget(project3DForm);
+    addDockWidget(Qt::LeftDockWidgetArea, projectDock);
+    if(leftDockMap.size()!=0)
+    {
+        tabifyDockWidget(curLeftDock, projectDock);
+    }
+
+    connect(project3DForm, &Project3DForm::signalViewPoint, tabWidget, &OSGShowWidget::slotViewPoint);
+    connect(projectDock, &QDockWidgetEx::signalClose, this, &MainWindow::slotCloseDock);
+
+    curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
+    curLeftDock = projectDock;
+    projectMap[_3dProject->getFileName()] = curProj;
+    leftDockMap[_3dProject->getFileName()] = curLeftDock;
+}
+
 void MainWindow::on_tBOpenProject_clicked()
 {
     QString dir = QString::fromLocal8Bit("D:/Data/Test");
@@ -219,32 +233,10 @@ void MainWindow::on_tBOpenProject_clicked()
 
     std::shared_ptr<SceneProject3D> _3dProject = make_shared<SceneProject3D>();
     _3dProject->read(path.data());
-    string name = PathRef::DirOrPathGetName(_3dProject->getFileName());
+    loadProject(_3dProject);
 
-    OSGShowWidget *tabWidget = new OSGShowWidget(ui->centralTabWidget);
-    ui->centralTabWidget->addTab(tabWidget, QString::fromLocal8Bit(name.c_str()));
-    ui->centralTabWidget->setCurrentIndex(ui->centralTabWidget->indexOf(tabWidget));
-    tabWidget->load3DProject(_3dProject);
-
-    QDockWidget *projectDock = new QDockWidget(QString::fromLocal8Bit(name.c_str()), this);
-    projectDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    Project3DForm *project3DForm = new Project3DForm(projectDock);
-    projectDock->setWidget(project3DForm);
-    addDockWidget(Qt::LeftDockWidgetArea, projectDock);
-
-    tabifyDockWidget(curLeftDock, projectDock);
-    //leftDockList.push_back(projectDock);
-
-    project3DForm->LoadProject3d(_3dProject);
-    projectDock->setVisible(true); //要先设置可见才能显示
-    projectDock->raise();
-
-    connect(project3DForm, &Project3DForm::signalViewPoint, tabWidget, &OSGShowWidget::slotViewPoint);
-
-    curProj = std::dynamic_pointer_cast<SceneProjectBase>(_3dProject);
-    curLeftDock = projectDock;
-    projectMap[_3dProject->getFileName()] = curProj;
-    leftDockMap[_3dProject->getFileName()] = curLeftDock;
+    curLeftDock->setVisible(true); //要先设置可见才能显示
+    curLeftDock->raise();
 }
 
 void MainWindow::on_centralTabWidget_currentChanged(int index)
@@ -261,47 +253,6 @@ void MainWindow::on_centralTabWidget_currentChanged(int index)
             OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
             if(widget && !widget->isWork())
             {
-                widget->onStartTimer();
-            }
-        }
-        else
-        {
-            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
-            if(widget && widget->isWork())
-            {
-                widget->onStopTimer();
-            }
-        }
-    }
-}
-
-void MainWindow::on_centralTabWidget_tabCloseRequested(int index)
-{
-    OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(index));
-    if(widget && widget->isWork())
-    {
-        widget->onStopTimer();
-    }
-
-    ui->centralTabWidget->removeTab(index);
-}
-
-/*
-void MainWindow::on_centralTabWidget_currentChanged(int index)
-{
-    if(!initWindow)
-    {
-        return;
-    }
-
-    for (int i = 0; i < ui->centralTabWidget->count(); i++)
-    {
-        if( i == index)
-        {
-            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
-            if(widget && !widget->isWork())
-            {
-                cout<<"1111"<<endl;
                 widget->onStartTimer();
 
                 auto pit = projectMap.find(widget->GetName());
@@ -313,8 +264,11 @@ void MainWindow::on_centralTabWidget_currentChanged(int index)
                 auto dit = leftDockMap.find(widget->GetName());
                 if(dit != leftDockMap.end())
                 {
-                    curLeftDock = dit->second;
-                    curLeftDock->raise();
+                    if(curLeftDock != dit->second)
+                    {
+                        curLeftDock = dit->second;
+                        curLeftDock->raise();
+                    }
                 }
             }
         }
@@ -332,6 +286,7 @@ void MainWindow::on_centralTabWidget_currentChanged(int index)
 void MainWindow::on_centralTabWidget_tabCloseRequested(int index)
 {
     OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(index));
+    ui->centralTabWidget->removeTab(index);
     if(widget)
     {
         auto pit = projectMap.find(widget->GetName());
@@ -343,14 +298,18 @@ void MainWindow::on_centralTabWidget_tabCloseRequested(int index)
         auto dit = leftDockMap.find(widget->GetName());
         if(dit != leftDockMap.end())
         {
-            dit->second->close();
+            auto dock = dit->second;
             leftDockMap.erase(dit);
+            removeDockWidget(dock);
+            dock->close();
         }
 
-        delete widget;
-        widget = nullptr;
+        if(widget->isWork())
+        {
+            widget->onStopTimer();
+        }
     }
-}*/
+}
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
@@ -389,6 +348,82 @@ void MainWindow::on_tBNewPhotogrammetry_clicked()
         if(dock)
         {
             dock->AddTiltingData(dir.data());
+        }
+    }
+}
+
+int MainWindow::find3DShowWidgetIndex(std::string name)
+{
+    for(int i = 0; i < ui->centralTabWidget->count(); i++)
+    {
+        OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(i));
+        if(widget)
+        {
+            if(widget->GetName()==name)
+            {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+void MainWindow::on_MainWindow_tabifiedDockWidgetActivated(QDockWidget *dockWidget)
+{
+    if(curLeftDock==dockWidget)
+    {
+        return;
+    }
+
+    Project3DForm* form = dynamic_cast<Project3DForm *>(dockWidget->widget());
+    if(form)
+    {
+        curLeftDock = dynamic_cast<QDockWidgetEx *>(dockWidget);
+        if(!curLeftDock)
+        {
+            return;
+        }
+
+        auto pit = projectMap.find(form->GetName());
+        if(pit != projectMap.end())
+        {
+            curProj = pit->second;
+        }
+
+        int index = find3DShowWidgetIndex(form->GetName());
+        if(index>=0)
+        {
+            ui->centralTabWidget->setCurrentIndex(index);
+        }
+    }
+}
+
+void MainWindow::slotCloseDock(QDockWidgetEx *dockWidget)
+{
+    Project3DForm* form = dynamic_cast<Project3DForm *>(dockWidget->widget());
+    if(form)
+    {
+        auto pit = projectMap.find(form->GetName());
+        if(pit != projectMap.end())
+        {
+            projectMap.erase(pit);
+        }
+
+        auto dit = leftDockMap.find(form->GetName());
+        if(dit != leftDockMap.end())
+        {
+            leftDockMap.erase(dit);
+        }
+
+        int index = find3DShowWidgetIndex(form->GetName());
+        if(index>=0)
+        {
+            OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->widget(index));
+            if(widget&&widget->isWork())
+            {
+                widget->onStopTimer();
+            }
+            ui->centralTabWidget->removeTab(index);
         }
     }
 }

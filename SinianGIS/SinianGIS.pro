@@ -36,6 +36,7 @@ SOURCES += \
     mainwindow.cpp \
     osgshowwidget.cpp \
     project3dform.cpp \
+    qdockwidgetex.cpp \
     sceneproject3d.cpp \
     sceneprojectbase.cpp \
     tinyxml/tinyxml.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     osgshowwidget.h \
     pathref.hpp \
     project3dform.h \
+    qdockwidgetex.h \
     sceneproject3d.h \
     sceneprojectbase.h \
     tinyxml/tinyxml.h

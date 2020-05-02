@@ -18,8 +18,6 @@ public:
     explicit OSGShowWidget(QWidget *parent = nullptr);
     ~OSGShowWidget();
 
-    void destory();
-
     bool load3DProject(std::shared_ptr<SceneProject3D> project);
 
     void SetTerrainLayerViewPoint(std::string name);

@@ -33,10 +33,9 @@
 5. 三维卷帘与二维卷帘
 
 # update预告
-2. 保存读取上次留下的配置（QSetting）
-3. 保证工程界面之间的切换
-4. 图层是否可见
-5. 矢量数据支持
+1. 保存读取上次留下的配置（QSetting）
+2. 图层是否可见
+3. 矢量数据支持
 
 [imglink1]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/1.PNG
 [imglink2]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/2.PNG

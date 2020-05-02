@@ -26,6 +26,8 @@ public:
     void AddVector();
     void AddTiltingData(std::string fileName);
 
+    std::string GetName(){return sceneProject3D?sceneProject3D->getFileName():"";}
+
 signals:
     void signalViewPoint(std::string name);
     void signalTerrainViewPoint();
@@ -33,6 +35,7 @@ signals:
     void signalTiltingDataViewPoint();
 
 protected:
+
     QTreeWidgetItem* terrainItem;
     QTreeWidgetItem* imageItem;
     QTreeWidgetItem* vectorItem;
