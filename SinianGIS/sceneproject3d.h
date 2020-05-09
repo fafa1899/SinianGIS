@@ -25,6 +25,7 @@ public:
 
     void AddLocalImage(std::string filePath);
     void AddLocalTerrain(std::string filePath);
+    bool AddLocalVector(std::string filePath);
     bool AddPhotogrammetry(std::string fileDir);
 
     void AddArcGISImagery();
@@ -42,6 +43,7 @@ public:
     QJsonArray localImageArray;
     QJsonArray localTerrainArray;
     QJsonArray obliquePhotographyArray;
+    QJsonArray localVectorArray;
 
 //signals:
 

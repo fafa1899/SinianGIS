@@ -272,7 +272,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton_6">
+              <widget class="QToolButton" name="tBNewVectorLayer">
                <property name="text">
                 <string>矢量</string>
                </property>

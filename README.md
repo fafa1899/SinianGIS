@@ -21,9 +21,12 @@
 3.加载显示倾斜摄影模型
 ![imglink3]
 
-4.ArcGIS、bing在线数据
+4.加载显示矢量数据
+![imglink4]
+
+5.ArcGIS、bing在线数据
    
-5.数据保存为json工程文件，方便下次加载。
+6.数据保存为json工程文件，方便下次加载。
 
 # 计划特性
 1. 在线地图支持
@@ -33,10 +36,10 @@
 5. 三维卷帘与二维卷帘
 
 # update预告
-1. 保存读取上次留下的配置（QSetting）
-2. 图层是否可见
-3. 矢量数据支持
+1. 文件关联
+2. 图层可见性调整
 
 [imglink1]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/1.PNG
 [imglink2]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/2.PNG
 [imglink3]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/3.PNG
+[imglink4]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/4.PNG

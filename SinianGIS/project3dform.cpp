@@ -103,6 +103,15 @@ void Project3DForm::LoadProject3d(std::shared_ptr<SceneProject3D> project)
         }
     }
 
+    for (int i = 0; i < sceneProject3D->localVectorArray.size(); i++)
+    {
+        QJsonValue value = sceneProject3D->localVectorArray.at(i);
+        if (value.isString())
+        {
+            QByteArray v = value.toString().toLocal8Bit();
+            AddVector(v.data());
+        }
+    }
 }
 
 void Project3DForm::AddTerrain(std::string fileName)
@@ -127,9 +136,15 @@ void Project3DForm::AddImage(std::string fileName)
     subItem->setData(0, Qt::UserRole, QVariant::fromValue(fileName));
 }
 
-void Project3DForm::AddVector()
+void Project3DForm::AddVector(std::string fileName)
 {
-
+    QTreeWidgetItem *subItem = new QTreeWidgetItem(vectorItem);
+    string name = PathRef::DirOrPathGetName(fileName);
+    subItem->setText(0, QString::fromLocal8Bit(name.c_str()));
+    vectorItem->addChild(subItem);
+    subItem->setCheckState(0, Qt::Checked);
+    subItem->setIcon(0, vectorIcon);
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue(fileName));
 }
 
 void Project3DForm::AddTiltingData(std::string fileName)

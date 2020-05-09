@@ -74,7 +74,7 @@ INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
     D:/Work/GDALBuild/gdal-2.4.2/install/include
 
 LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
-    -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil\
+    -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil -losgEarthSymbology -losgEarthFeatures\
     -LD:/Work/GDALBuild/gdal-2.4.2/install/lib -lgdal_i
 
 DESTDIR = $$PWD/../bin

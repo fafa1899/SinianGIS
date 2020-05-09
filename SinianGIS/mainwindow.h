@@ -74,6 +74,9 @@ private slots:
 
     void slotCloseDock(QDockWidgetEx *dockWidget);
 
+    //º”‘ÿ ∏¡ø
+    void on_tBNewVectorLayer_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

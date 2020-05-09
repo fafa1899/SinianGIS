@@ -434,3 +434,34 @@ void MainWindow::slotCloseDock(QDockWidgetEx *dockWidget)
         }
     }
 }
+
+void MainWindow::on_tBNewVectorLayer_clicked()
+{
+    QString dir = gSettings->value("VectorPath").toString();
+    QString filePath = QFileDialog::getOpenFileName(this,QString::fromLocal8Bit("打开本地矢量数据"),
+                                                    dir,QString::fromLocal8Bit("本地矢量数据(*.shp *.dxf);;本地矢量数据(*.*)"));
+    if(filePath.isNull())
+    {
+        return;
+    }
+    gSettings->setValue("VectorPath", filePath);
+
+    QByteArray path = filePath.toLocal8Bit();
+
+    std::shared_ptr<SceneProject3D> proj = std::dynamic_pointer_cast<SceneProject3D>(curProj);
+    if(proj)
+    {
+        proj->AddLocalVector(path.data());
+        OSGShowWidget *widget = dynamic_cast<OSGShowWidget *>(ui->centralTabWidget->currentWidget());
+        if(widget)
+        {
+           widget->SetNodeViewPoint(path.data());
+        }
+
+        Project3DForm* dock = dynamic_cast<Project3DForm*>(curLeftDock->widget());
+        if(dock)
+        {
+            dock->AddVector(path.data());
+        }
+    }
+}

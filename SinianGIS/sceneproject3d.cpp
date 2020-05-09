@@ -21,11 +21,14 @@
 #include <osgEarthDrivers/bing/BingOptions>
 #include <osgEarthDrivers/arcgis/ArcGISOptions>
 #include <osgEarthDrivers/sky_simple/SimpleSkyOptions>
-
-//#include <osgEarthDrivers/feature_ogr/OGRFeatureOptions>
+#include <osgEarthDrivers/feature_ogr/OGRFeatureOptions>
 //#include <osgEarthDrivers/model_feature_geom/FeatureGeomModelOptions>
+
 //#include <osgEarthDrivers/tms/TMSOptions>
 //#include <osgEarthDrivers/tilecache/TileCacheOptions>
+
+#include <osgEarthFeatures/FeatureSourceLayer>
+#include <osgEarthFeatures/FeatureModelLayer>
 
 #include <osgEarthUtil/EarthManipulator>
 //#include <osgEarthUtil/AutoClipPlaneHandler>
@@ -107,6 +110,24 @@ void SceneProject3D::read(std::string path)
         }
     }
 
+    if(projectJSON.contains("LocalVector"))
+    {
+        QJsonValue key_value = projectJSON.take("LocalVector");
+        if (key_value.isArray())
+        {
+            QJsonArray array = key_value.toArray();
+            for (int i = 0; i < array.size(); i++)
+            {
+                QJsonValue value = array.at(i);
+                if (value.isString())
+                {
+                    QByteArray v = value.toString().toLocal8Bit();
+                    AddLocalVector(v.data());
+                }
+            }
+        }
+    }
+
     if(projectJSON.contains("ViewPoints"))
     {
         ReadViewPoint();
@@ -165,6 +186,7 @@ void SceneProject3D::write(std::string path)
     projectJSON.insert("LocalImage", localImageArray);
     projectJSON.insert("LocalTerrain", localTerrainArray);
     projectJSON.insert("ObliquePhotography", obliquePhotographyArray);
+    projectJSON.insert("LocalVector", localVectorArray);
 
     SaveViewPoint();
 
@@ -288,6 +310,157 @@ void SceneProject3D::AddLocalTerrain(std::string filePath)
 
     QJsonValue value(QString::fromLocal8Bit(filePath.c_str()));
     localTerrainArray.push_back(value);
+}
+
+//加入矢量数据
+bool SceneProject3D::AddLocalVector(std::string filePath)
+{
+    //
+    osgEarth::Drivers::OGRFeatureOptions featureData;
+    featureData.url() = filePath;
+
+    //    ifstream infile("C:/Data/vector/hs/23.prj");
+    //    string line;
+    //    getline(infile, line);
+    //    featureData.profile()->srsString() = line;
+
+    // Make a feature source layer and add it to the Map:
+    osgEarth::Features::FeatureSourceLayerOptions ogrLayer;
+    ogrLayer.name() = filePath + "_source";
+    ogrLayer.featureSource() = featureData;
+    osgEarth::Features::FeatureSourceLayer*  featureSourceLayer = new osgEarth::Features::FeatureSourceLayer(ogrLayer);
+    map->addLayer(featureSourceLayer);
+    osgEarth::Features::FeatureSource *features = featureSourceLayer->getFeatureSource();
+    if (!features)
+    {
+        QMessageBox::critical(nullptr, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("无法打开该矢量文件！"), QMessageBox::Ok);
+        return false;
+    }
+
+    osgEarth::Symbology::Geometry::Type type = features->getGeometryType();
+    if (osgEarth::Symbology::Geometry::TYPE_UNKNOWN == type)
+    {
+        QMessageBox::critical(nullptr, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("该矢量文件的类型未知，或者含有多种类型的特征。"), QMessageBox::Ok);
+        return false;
+    }
+
+    osgEarth::Symbology::Style style;
+
+    //高度设置
+    osgEarth::Symbology::AltitudeSymbol* alt = style.getOrCreate<osgEarth::Symbology::AltitudeSymbol>();
+    int altMode = 1;
+    switch (altMode)
+    {
+    case 2:
+        alt->clamping() = alt->CLAMP_RELATIVE_TO_TERRAIN;
+        break;
+    case 3:
+        alt->clamping() = alt->CLAMP_ABSOLUTE;
+        break;
+    case 1:
+    default:
+        alt->clamping() = alt->CLAMP_TO_TERRAIN;
+        alt->technique() = alt->TECHNIQUE_DRAPE;
+        break;
+    }
+
+    if(osgEarth::Symbology::Geometry::TYPE_POINTSET == type)
+    {
+        osgEarth::Symbology::PointSymbol *ps = style.getOrCreateSymbol<osgEarth::Symbology::PointSymbol>();
+        ps->size() = 5;
+        ps->fill()->color() = osgEarth::Symbology::Color("#EE6363");
+        ps->smooth() = true;
+    }
+    else if(osgEarth::Symbology::Geometry::TYPE_LINESTRING == type || osgEarth::Symbology::Geometry::TYPE_RING == type)
+    {
+        osgEarth::Symbology::LineSymbol* ls = style.getOrCreateSymbol<osgEarth::Symbology::LineSymbol>();
+        ls->stroke()->color() = osgEarth::Symbology::Color("#436EEE");
+        ls->stroke()->width() = 1.0;
+        ls->tessellationSize()->set(100, osgEarth::Units::KILOMETERS);
+    }
+    else if(osgEarth::Symbology::Geometry::TYPE_POLYGON == type)
+    {
+        osgEarth::Symbology::LineSymbol* ls = style.getOrCreateSymbol<osgEarth::Symbology::LineSymbol>();
+        ls->stroke()->color() = osgEarth::Symbology::Color("#9370DB");
+        ls->stroke()->width() = 1.0;
+        ls->tessellationSize()->set(100, osgEarth::Units::KILOMETERS);
+
+        osgEarth::Symbology::PolygonSymbol *polygonSymbol = style.getOrCreateSymbol<osgEarth::Symbology::PolygonSymbol>();
+        polygonSymbol->fill()->color() = osgEarth::Symbology::Color(152.0f/255, 251.0f/255, 152.0f/255, 0.5f); //238 230 133
+        polygonSymbol->outline() = true;
+    }
+
+    //可见性
+    osgEarth::Symbology::RenderSymbol* rs = style.getOrCreate<osgEarth::Symbology::RenderSymbol>();
+    rs->depthTest() = false;
+
+    //
+    osgEarth::Features::FeatureModelLayerOptions fmlOpt;
+    fmlOpt.name() = filePath;
+    fmlOpt.featureSourceLayer() = filePath + "_source";
+    fmlOpt.enableLighting() = false;
+    fmlOpt.styles() = new osgEarth::Symbology::StyleSheet();
+    fmlOpt.styles()->addStyle(style);
+
+    osg::ref_ptr<osgEarth::Features::FeatureModelLayer> fml = new osgEarth::Features::FeatureModelLayer(fmlOpt);
+    map->addLayer(fml);
+
+    /*
+    if (!config.fieldName.empty())
+    {
+        Style labelStyle;
+
+        TextSymbol* text = labelStyle.getOrCreateSymbol<TextSymbol>();
+        //string name = QString::fromLocal8Bit("[座落地址]").toUtf8().data();
+        //string name = "[宗地代码]";
+        //string name = "[Name]";
+        string name = string("[") + QString::fromLocal8Bit(config.fieldName.c_str()).toUtf8().data() + "]";
+        text->content() = StringExpression(name);
+        //text->priority() = NumericExpression( "[pop_cntry]" );
+        text->size() = 16.0f;
+        text->alignment() = TextSymbol::ALIGN_CENTER_CENTER;
+        text->fill()->color() = Color::White;
+        text->halo()->color() = Color::Red;
+        text->encoding() = TextSymbol::ENCODING_UTF8;
+        string fontFile = PathRef::GetAppDir() + "/fonts/SourceHanSansCN-Regular.ttf";
+        text->font() = fontFile;
+
+        // and configure a model layer:
+        FeatureModelLayerOptions fmlOpt;
+        fmlOpt.name() = config.name + "_labels";
+        fmlOpt.featureSourceLayer() = config.name + "_source";
+        fmlOpt.styles() = new StyleSheet();
+        fmlOpt.styles()->addStyle(labelStyle);
+
+        ref_ptr<FeatureModelLayer> fml = new FeatureModelLayer(fmlOpt);
+        //fml->setFeatureSource(features);
+        earthMap->addLayer(fml);
+    }*/
+
+    /*
+    Style newStyle;
+    newStyle = *style;
+    newStyle.setName("test");
+    //styleSheet->addStyle(newStyle);
+
+    LineSymbol* ls = newStyle.getOrCreateSymbol<LineSymbol>();
+    ls->stroke()->color() = Color::Yellow;
+    ls->stroke()->width() = 1.0f;
+    ls->tessellationSize()->set(100, Units::KILOMETERS);
+
+    StyleSelector styleSelector;
+    styleSelector.styleName() = "test";
+    styleSelector.query()->expression() = "fid < 50";
+    //styleSheet->selectors().push_back(styleSelector);
+
+    //fmlOpt.styles()->addStyle(newStyle);
+    //fmlOpt.styles()->selectors().push_back(styleSelector);
+     */
+
+    QJsonValue value(QString::fromLocal8Bit(filePath.c_str()));
+    localVectorArray.push_back(value);
+
+    return true;
 }
 
 //读取3d场景的元数据

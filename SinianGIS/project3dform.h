@@ -23,7 +23,7 @@ public:
 
     void AddTerrain(std::string fileName);
     void AddImage(std::string fileName);
-    void AddVector();
+    void AddVector(std::string fileName);
     void AddTiltingData(std::string fileName);
 
     std::string GetName(){return sceneProject3D?sceneProject3D->getFileName():"";}
