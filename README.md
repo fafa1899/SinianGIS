@@ -11,6 +11,16 @@
 5. osgQt: https://github.com/openscenegraph/osgQt
 6. XML数据格式读写库：tinyXML
 
+# 环境搭建
+1. 安装Visual Studio 2017。
+2. 安装Qt环境。
+3. 编译GEOS：[VS2015编译GEOS的debug和release版本](https://blog.csdn.net/charlee44/article/details/86744035)。
+4. 编译GDAL：[Win64下编译集成GEOS和Proj4的GDAL](https://blog.csdn.net/charlee44/article/details/86749175)。
+5. KML支持：[GDAL集成对KML文件的支持](https://blog.csdn.net/charlee44/article/details/102731757)。
+6. 编译OpenSceneGraph：[Win64下编译OSG详细过程（Win10+VS2015+OSG3.6.3）](https://blog.csdn.net/charlee44/article/details/86761461)。
+7. 编译osgEarth：[Windows下OSGEarth的编译过程](https://blog.csdn.net/charlee44/article/details/94299746)。
+8. 编译osgQt: [OSG嵌入QT的简明总结](https://blog.csdn.net/charlee44/article/details/92400068)。
+
 # 目前特性
 1.主界面显示了一个数字地球      
 ![imglink1]
