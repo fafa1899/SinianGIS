@@ -15,5 +15,6 @@
         <file>Res/photogrammetry.png</file>
         <file>Res/model.png</file>
         <file>Res/photogrammetry_data.gif</file>
+        <file>Res/Google.png</file>
     </qresource>
 </RCC>

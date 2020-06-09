@@ -30,10 +30,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ExceptionDmp.cpp \
+    GoogleMapTiles.cpp \
     ViewWidget.cpp \
+    WebTilesClass.cpp \
     loadphotogrammetrydialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    mapdownloaddialog.cpp \
     osgshowwidget.cpp \
     project3dform.cpp \
     qdockwidgetex.cpp \
@@ -45,11 +48,14 @@ SOURCES += \
 
 HEADERS += \
     ExceptionDmp.h \
+    GoogleMapTiles.h \
     Settings.h \
     StdStringEx.hpp \
     ViewWidget \
+    WebTilesClass.h \
     loadphotogrammetrydialog.h \
     mainwindow.h \
+    mapdownloaddialog.h \
     osgshowwidget.h \
     pathref.hpp \
     project3dform.h \
@@ -61,6 +67,7 @@ HEADERS += \
 FORMS += \
     loadphotogrammetrydialog.ui \
     mainwindow.ui \
+    mapdownloaddialog.ui \
     project3dform.ui
 
 # Default rules for deployment.
@@ -71,11 +78,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 INCLUDEPATH += D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/include \
     D:/Work/OSGNewBuild/osgearth-2.10.1/src \
     D:/Work/Library/nlohmann/single_include \
-    D:/Work/GDALBuild/gdal-2.4.2/install/include
+    D:/Work/GDALBuild/gdal-2.4.2/install/include \
+    D:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/3rdParty/x64/include
 
 LIBS += -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/build/lib -losg -lOpenThreads -losgDB -losgUtil -losgGA -losgViewer -losgQt5\
     -LD:/Work/OSGNewBuild/osgearth-2.10.1/build/lib/Release -losgEarth -losgEarthUtil -losgEarthSymbology -losgEarthFeatures\
-    -LD:/Work/GDALBuild/gdal-2.4.2/install/lib -lgdal_i
+    -LD:/Work/GDALBuild/gdal-2.4.2/install/lib -lgdal_i\
+    -LD:/Work/OSGNewBuild/OpenSceneGraph-3.6.4/3rdParty/x64/lib -llibcurl_imp
 
 DESTDIR = $$PWD/../bin
 

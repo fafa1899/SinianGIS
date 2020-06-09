@@ -6,6 +6,7 @@
 #include "loadphotogrammetrydialog.h"
 #include "osgshowwidget.h"
 #include "Settings.h"
+#include "mapdownloaddialog.h"
 
 #include <QDockWidget>
 #include <QMenu>
@@ -464,4 +465,11 @@ void MainWindow::on_tBNewVectorLayer_clicked()
             dock->AddVector(path.data());
         }
     }
+}
+
+void MainWindow::on_tBGoogleImageDownload_clicked()
+{
+    MapDownloadDialog *mapDownloadDialog = new MapDownloadDialog(this);
+
+    mapDownloadDialog->exec();
 }

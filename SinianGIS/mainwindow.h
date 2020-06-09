@@ -77,6 +77,8 @@ private slots:
     //º”‘ÿ ∏¡ø
     void on_tBNewVectorLayer_clicked();
 
+    void on_tBGoogleImageDownload_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
