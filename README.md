@@ -34,9 +34,13 @@
 4.加载显示矢量数据
 ![imglink4]
 
-5.ArcGIS、bing在线数据
+5.下载谷歌地图影像瓦片数据
+![imglink5]
+![imglink6]
+
+6.ArcGIS、bing在线数据
    
-6.数据保存为json工程文件，方便下次加载。
+7.数据保存为json工程文件，方便下次加载。
 
 # 计划特性
 1. 在线地图支持
@@ -53,3 +57,5 @@
 [imglink2]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/2.PNG
 [imglink3]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/3.PNG
 [imglink4]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/4.PNG
+[imglink5]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/5.PNG
+[imglink6]:https://raw.githubusercontent.com/fafa1899/SinianGIS/master/README/6.PNG
