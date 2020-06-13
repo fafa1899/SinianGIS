@@ -16,12 +16,15 @@ class OSGShowWidget : public QWidget
     Q_OBJECT
 public:
     explicit OSGShowWidget(QWidget *parent = nullptr);
-    ~OSGShowWidget();
+    virtual ~OSGShowWidget();
 
-    bool load3DProject(std::shared_ptr<SceneProject3D> project);
+    virtual std::string GetName(){return name;}
 
-    void SetTerrainLayerViewPoint(std::string name);
-    void SetNodeViewPoint(std::string name);
+
+    //bool load3DProject(std::shared_ptr<SceneProject3D> project);
+
+//    void SetTerrainLayerViewPoint(std::string name);
+//    void SetNodeViewPoint(std::string name);
 
     //启动定时器绘制
     void onStartTimer();
@@ -30,7 +33,7 @@ public:
 
     bool isWork(){return bWork;}
 
-    std::string GetName(){return sceneProject3D?sceneProject3D->getFileName():"";}
+    //std::string GetName(){return sceneProject3D?sceneProject3D->getFileName():"";}
 
 protected:
     //virtual void paintEvent(QPaintEvent* e);
@@ -38,8 +41,8 @@ protected:
 
     void addView();
 
-    bool CalViewPointGeoExtend(const osgEarth::GeoExtent& extent, std::shared_ptr<osgEarth::Viewpoint> out);
-    bool CalViewPointNode(osg::ref_ptr<osg::Node> node, std::shared_ptr<osgEarth::Viewpoint> out);
+//    bool CalViewPointGeoExtend(const osgEarth::GeoExtent& extent, std::shared_ptr<osgEarth::Viewpoint> out);
+//    bool CalViewPointNode(osg::ref_ptr<osg::Node> node, std::shared_ptr<osgEarth::Viewpoint> out);
 
     //QTimer                     _timer;
     int _timerID;               //定时器ID
@@ -48,15 +51,15 @@ protected:
     bool bWork;
 
     osg::ref_ptr<osgViewer::View> view;
-    std::shared_ptr<SceneProject3D> sceneProject3D;
-    osg::ref_ptr<osgEarth::Util::EarthManipulator> mainManipulator;
+    //std::shared_ptr<SceneProject3D> sceneProject3D;
+    //osg::ref_ptr<osgEarth::Util::EarthManipulator> mainManipulator;
 
     QWidget* viewWidget;
 
+    std::string name;
+
 signals:
 
-public slots:
-    void slotViewPoint(std::string name);
 };
 
 #endif // OSGSHOWWIDGET_H

@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(std::string filePath, QWidget *parent = nullptr);
     ~MainWindow();
 
     void show();
@@ -28,7 +28,10 @@ signals:
 protected:
     void closeEvent(QCloseEvent *e);
 
+    void loadData(std::string filePath);
+    void loadTypeData(std::string filePath, int type);
     void loadProject(std::shared_ptr<SceneProject3D> _3dProject);
+    void loadObject(std::string filePath);
 
     int find3DShowWidgetIndex(std::string name);
 

@@ -37,9 +37,12 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     mapdownloaddialog.cpp \
+    osg3dglobalshowwidget.cpp \
+    osg3dobjectshowwidget.cpp \
     osgshowwidget.cpp \
     project3dform.cpp \
     qdockwidgetex.cpp \
+    regedit.cpp \
     sceneproject3d.cpp \
     sceneprojectbase.cpp \
     tinyxml/tinyxml.cpp \
@@ -56,10 +59,13 @@ HEADERS += \
     loadphotogrammetrydialog.h \
     mainwindow.h \
     mapdownloaddialog.h \
+    osg3dglobalshowwidget.h \
+    osg3dobjectshowwidget.h \
     osgshowwidget.h \
     pathref.hpp \
     project3dform.h \
     qdockwidgetex.h \
+    regedit.h \
     sceneproject3d.h \
     sceneprojectbase.h \
     tinyxml/tinyxml.h
